@@ -29,13 +29,20 @@ var startGame = function() {
     }
    
     fight(pickedEnemyName);
+
+    if (playerHealth > 0 && i< enemyNames.length -1) {
+      var storeConfirm = window.confirm("That fight is over.... Would you like to enter the store?");
+      if (storeConfirm) {
+        shop();
+      }
+    }
   }
   endGame();
 }
 
 var endGame = function() {
   if (playerHealth > 0) {
-    message = "Congratulations! You've won the battle!\r\nYou're score is: " + playerMoney;
+    message = "Congratulations! You've won the battle!\r\nYour winnings are: $" + playerMoney;
   }
   else {
     message = "You've lost your robot in battle....";
@@ -103,6 +110,35 @@ var fight = function(enemyName) {
     // If the player chooses something other the fight or skip
     else {
       window.alert("You must choose to FIGHT or SKIP")
+    }
+  }
+}
+
+var shop = function() {
+  console.log("Entered the store!!")
+  var num = null;
+  var exitStore = false;
+  
+  while(!exitStore) {
+    var num = window.prompt("You have $" + playerMoney + " remaining.\r\n\Would you like to:\r\n1) Refill health\r\n2) Upgrde Attack\r\n3) Exit Store\r\nSelect (1 - 3)")
+   switch(num) {
+      case "1": 
+        if (playerMoney >= 7) {
+          playerHealth = playerHealth + 20;
+          playerMoney = playerMoney - 7;
+        }
+      break;
+      case "2": 
+      if (playerMoney >= 7) {
+        playerAttack = playerAttack + 6;
+        playerMoney = playerMoney - 7;
+      }
+      break;
+      case "3":
+        exitStore = true;
+        break;
+      default: 
+      break;
     }
   }
 }
