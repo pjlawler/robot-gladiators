@@ -24,9 +24,12 @@ var playerInfo = {
 
   setPlayerName: function (){
     while (!playerName) {
-      var playerName = window.prompt("What is the name fo your robot?").trim();
+      var playerName = window.prompt("What is the name fo your robot?");
+      if (playerName == null) {
+        quitGame();
+      }
     }
-    this.name = playerName;
+    this.name = playerName.trim();
   },
 
   updateAttack: function() {
@@ -104,16 +107,41 @@ var quitGame = function() {
   throw Error;
 } 
 
+var highScoreBoard = {
+
+  name: localStorage.getItem("robotName"),
+  score: localStorage.getItem("highScore"),
+
+  isHighScore: function() {
+
+    if (this.score == null || playerInfo.money > this.score) {
+      localStorage.setItem("robotName", playerInfo.name);
+      localStorage.setItem("highScore", playerInfo.money);
+      this.name = playerInfo.name;
+      this.score = playerInfo.money.toString();
+      return true;
+      }
+    else {
+      return false;
+    }
+  }
+
+
+}
+
 
 var endGame = function() {
-  if (playerInfo.health > 0) {
-    message = "Congratulations! You've won the battle!\r\nYour winnings are: $" + playerInfo.money;
+  if (playerInfo.health > 0 && highScoreBoard.isHighScore()) {
+    message = "Congratulations! You've won the battle and you are the new highscore record holder!\r\nYour winnings are: $" + playerInfo.money;
+  }
+  else if(playerInfo.health > 0 && !highScoreBoard.isHighScore()) {
+    message = "Congratulations! You've won the battle with a score of $" + playerInfo.money + " but you are not better than " + highScoreBoard.name + " who holds the record of $" + parseInt(highScoreBoard.score);
   }
   else {
-    message = "You've lost your robot in battle....";
+    message = "You've lost your robot in battle.";
   }
 
-  var playAgain = window.confirm(message + "\r\nLet's play again!") 
+  var playAgain = window.confirm(message + "\r\nLet's play again!");
 
   if (playAgain) {
     startGame();
@@ -127,11 +155,13 @@ var fight = function(enemy) {
   // Alert players that they are starting the round
   while(playerInfo.health > 0 && enemy.health > 0) {
 
-    var promptFight = window.prompt("Do you want to fight or skip battle? Enter FIGHT or SKIP to choose.").toLowerCase();;
+    var promptFight = window.prompt("Do you want to fight or skip battle? Enter FIGHT or SKIP to choose.");
   
-    if (promptFight === "quit") {
+    if (promptFight == null) {
       quitGame();
     }
+
+    promptFight = promptFight.trim().toLowerCase();
 
     if (promptFight === "skip") {
 
@@ -190,20 +220,22 @@ var shop = function() {
   var exitStore = false;
   
   while(!exitStore) {
-    var choice = window.prompt("You have $" + playerInfo.money + " remaining.\r\n\Would you like to:\r\n1) Refill health\r\n2) Upgrde Attack\r\n3) Exit Store\r\nSelect (1 - 3)")
-   
-    switch(parseInt(choice)) {
-      case 1: 
-        playerInfo.refillHealth();
-      break;
-      case 2: 
-        playerInfo.updateAttack();
-      break;
-      case 3:
-        exitStore = true;
-        break;
-      default: 
-      break;
+    var choice = window.prompt("You have $" + playerInfo.money + " remaining.\r\n\Would you like to:\r\n1) Refill health\r\n2) Upgrde Attack\r\nSelect (1 or 2)")
+    if(choice == null) {
+      exitStore = true
+    }
+    else {
+      switch(parseInt(choice)) {
+        case 1: 
+          playerInfo.refillHealth();
+          break;
+        case 2: 
+          playerInfo.updateAttack();
+          break;
+        default: 
+          window.alert("Please choose 1 or 2, or Cancel to exit store.")
+          break;
+      }
     }
   }
 }
