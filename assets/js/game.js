@@ -18,7 +18,7 @@ var playerInfo = {
       this.money -= 7;  
     }
     else {
-      window.alert("You don't have enough money to add health.")
+      window.alert("You don't have enough money to add health.");
     }
   },
 
@@ -38,53 +38,59 @@ var playerInfo = {
       this.money -= 7;  
     }
     else {
-      window.alert("You don't have enough money to update attack points.")
+      window.alert("You don't have enough money to update attack points.");
     }
   }
     
 }
-var enemyInfo = [
-  {
-    name: "Robbie Otto",
-    attack: randomNumber(10, 14)
-  },
-  {
-    name: "Annie Android",
-    attack: randomNumber(10, 14)
-  },
-  {
-    name: "Robo Trumble",
-    attack: randomNumber(10, 14)
-  }
-];
 
-function getRandomOpponent() {
-  while (!botChosen) {
-    for (var i = 0; i < enemyInfo.length; i++) {
-      if (enemyInfo[i].attack != 0) {
-        if(randomNumber(1,2) == 1) {
-          var botChosen = enemyInfo[i];
-          break;
-        }
-      }
-    }  
-  }
-  return botChosen;
+
+var enemies = {
+  
+  info: [],
+
+  reset: function() {
+    
+    var enemyInfo = [
+      {
+      name: "Robbie Otto",
+      attack: randomNumber(10, 14)
+      },
+      {
+      name: "Annie Android",
+      attack: randomNumber(10, 14)
+      },
+      {
+      name: "Robo Trumble",
+      attack: randomNumber(10, 14)
+      }];
+
+    // Shuffles the array
+    for (i=0; i<enemyInfo.length; i++) {
+      var swapIndex = randomNumber(0,enemyInfo.length - 1);
+      [enemyInfo[i], enemyInfo[swapIndex]] = [enemyInfo[swapIndex], enemyInfo[i]];
+    }
+    this.info = enemyInfo;
+   }
 }
-
 
 var startGame = function() {
   
-  playerInfo.reset();
-  
-  for (var i = 0; i < enemyInfo.length; i++) {
+  if(!playerInfo.name) {
+    playerInfo.setPlayerName();
+  }
 
-    
-    pickedEnemyObj = getRandomOpponent();
+  playerInfo.reset();
+  enemies.reset(); 
+  enemyInfo = enemies.info
+
+  for (var i = 0; i < enemyInfo.length; i++) {
+    pickedEnemyObj = enemyInfo[i]
+    // pickedEnemyObj = getRandomOpponent();
     pickedEnemyObj.health = randomNumber(40, 60);
     
     if (playerInfo.health > 0) {
-      window.alert("Welcome to Robot Gladiators!\r\nRound #" + (i + 1) + "\r\n" + playerInfo.name + " (" + playerInfo.health + ") vs. " + pickedEnemyObj.name + "(" + pickedEnemyObj.health + ")");
+      window.alert("Welcome to Robot Gladiators!\r\nRound #" + (i + 1) + "\r\n" + playerInfo.name + " (" + playerInfo.health + ") vs. " + pickedEnemyObj.name + " (" + pickedEnemyObj.health + ")");
     }
     else {
      endGame();
@@ -155,7 +161,7 @@ var fight = function(enemy) {
   // Alert players that they are starting the round
   while(playerInfo.health > 0 && enemy.health > 0) {
 
-    var promptFight = window.prompt("Do you want to fight or skip battle? Enter FIGHT or SKIP to choose.");
+    var promptFight = window.prompt("Do you want to fight or skip battle? Enter FIGHT or SKIP to choose.", "FIGHT");
   
     if (promptFight == null) {
       quitGame();
@@ -245,7 +251,6 @@ function randomNumber(from, to) {
   return value;
 }
 
-playerInfo.setPlayerName();
 startGame();
 
     
